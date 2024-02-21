@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<!---Coding By CodingLab | www.codinglabweb.com--->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="icon" href="{{ url_for('static', filename='/img/titleicon.png') }}">
+
+</head>
+<style>
+  /* Import Google font - Poppins */
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:rgb(32 33 32 / 11%);
+  }
+
+  .container {
+    position: relative;
+    max-width: 700px;
+    width: 100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .container header {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 10px;
+
+  }
+
+  .container p {
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .container .logo {
+    width: 150px;
+
+  }
+
+  .container .form {
+    margin-top: 30px;
+    margin-bottom: 50px;
+  }
+
+  .form .input-box {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .input-box label {
+    color: #333;
+  }
+
+  .form :where(.input-box input, .select-box) {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+    color: #707070;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0 15px;
+  }
+
+  .form :where(.area-box) {
+    position: relative;
+    height: 113px;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+    color: #707070;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0 15px;
+  }
+
+  .input-box input:focus {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .form .column {
+    display: flex;
+    column-gap: 15px;
+  }
+
+  .form .gender-box {
+    margin-top: 20px;
+  }
+
+  .gender-box h3 {
+    color: #333;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .form :where(.gender-option, .gender) {
+    display: flex;
+    align-items: center;
+    column-gap: 50px;
+    flex-wrap: wrap;
+  }
+
+  .form .gender {
+    column-gap: 5px;
+  }
+
+  .gender input {
+    accent-color: black;
+  }
+
+  .form :where(.gender input, .gender label) {
+    cursor: pointer;
+  }
+
+  .gender label {
+    color: #707070;
+  }
+
+  .address :where(input, .select-box) {
+    margin-top: 15px;
+  }
+
+  .select-box select {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    color: #707070;
+    font-size: 1rem;
+  }
+
+  .form button {
+    height: 55px;
+    width: 100%;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #eda4a4;
+  }
+
+  .form button:hover {
+    background: #eda4a4;
+    color: black;
+  }
+
+  .forsubform {
+    padding-bottom: 20px;
+    border-bottom: 2px solid #8a8787;
+  }
+
+  /* .subform-content{
+  padding-bottom: 20px;
+  border-bottom: 2px solid #8a8787;
+} */
+  .subform-content-head h2 {
+    font-size: 1.5rem;
+    color: #2e2c2c;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .subform-content-head p {
+    text-align: left;
+  }
+
+  .inputsfor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .inputsfor .input-box {
+    width: 48%;
+  }
+
+  /*Responsive*/
+  @media screen and (max-width: 500px) {
+    .form .column {
+      flex-wrap: wrap;
+    }
+
+    .form :where(.gender-option, .gender) {
+      row-gap: 15px;
+    }
+  }
+
+  .span {
+    font-size: 12px;
+  }
+    .days-div{
+ margin-top:10px;
+ display:flex;
+ justify-content:space-between;
+  align-items:center;
+ }
+
+ .days-div span{
+ margin-left:8px; color:black
+ }
+
+ .days-div input{
+ margin: 0px; padding: 0px; height: 20px;
+ }
+    span{
+     color:red;
+    }
+    .remove-job-button {
+    width: 25%!important;
+    display: block;
+    margin-left: auto;
+    margin-top: 10px;
+  }
+</style>
+
+<body>
+  <section class="container">
+    <div class="form-head">
+        <img class="logo" src="{{ url_for('static', filename='/img/zemaan-logo.png') }}" alt="">
+           <a class="backtodashboard" href="{{ url_for('jobOders') }}">
+             <i class="fa fa-arrow-left"></i>
+             <p style="margin-bottom: 0px">open position</p>
+           </a>
+       </div>
+
+    <form action="/" method="post" class="form" enctype="multipart/form-data">
+      <div class="input-box">
+        <label>Job Title <span>*</span>
+        </label>
+        <input type="text" name="title" placeholder="Enter Job Title" required />
+      </div>
+      <input type="text" placeholder="Enter Your name" name="user_id" hidden
+        value="{{session['user_id']}}" />
+      <input type="text" placeholder="Enter Your name" name="name" hidden
+        value="{{session['user']}}" />
+
+<div class="inputsfor">
+                                <div class="input-box">
+                                    <label>Pay Rate <span>*</span></label>
+                                    <input type="number" placeholder="Pay Rate" name="pay_rate"
+                                        value="" required />
+                                </div>
+                                <div class="input-box">
+                                    <label>Pay Rate <span>*</span></label>
+                                    <select class="select-box" name="pay_rate_type">
+                                        <option value="Monthly" >Monthly</option>
+                                        <option value="Yearly" >Yearly</option>
+                                        <option value="Hourly">Hourly</option>
+                                    </select>
+                                </div>
+                            </div>
+
+<div class="inputsfor">
+                                   <div class="input-box">
+                                       <label>selected days</label>
+                                       <div class="days-div">
+                                           <label>
+                                               <span> M</span>
+                                               <input type="checkbox" id="mon" name="days[]" value="mon">
+                                           </label>
+                                           <label>
+                                               <span> T</span>
+                                               <input type="checkbox" id="tues" name="days[]" value="tues">
+                                           </label>
+                                           <label>
+                                               <span> W</span>
+                                               <input type="checkbox" id="wed" name="days[]" value="wed">
+                                           </label>
+                                           <label>
+                                               <span> T</span>
+                                               <input type="checkbox" id="thur" name="days[]" value="thur">
+                                           </label>
+                                           <label>
+                                               <span> F</span>
+                                               <input type="checkbox" id="fri" name="days[]" value="fri">
+                                           </label>
+                                           <label>
+                                               <span> S</span>
+                                               <input type="checkbox" id="sat" name="days[]" value="sat">
+                                           </label>
+                                           <label>
+                                               <span> S</span>
+                                               <input type="checkbox" id="sun" name="days[]" value="sun">
+                                                                             </label>
+                                       </div>
+                                   </div>
+                            </div>
+                            <div class="inputsfor">
+                                <div class="input-box">
+                                    <label>Shifts<span>*</span></label>
+                                    <div class="inputsfor">
+                                        <input type="time" name="shift_start" value=""
+                                            required />
+                                        To
+                                        <input type="time" required name="shift_end" value="" />
+                                    </div>
+
+                                </div>
+                                <div class="input-box">
+                                    <label>Total Vacancies <span>*</span></label>
+                                    <input type="number" name="total_vacancies" placeholder="0"
+                                        value="" />
+                                </div>
+                            </div>
+
+      <button type="submit" name="submit">Submit</button>
+      <button type="button"><a style="color:white;" href="{{ url_for('jobs') }}">Cancel</a></button>
+    </form>
+
+  </section>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+
+
+</html>

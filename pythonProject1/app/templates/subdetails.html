@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %} Members {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block content %}
+{% if session['role']=='admin' %}
+<style>
+   tr{
+   margin-top:20px;
+   border-bottom: 1px solid black;
+   width:100%;
+   }
+  th{
+  text-align:center;
+  color: #19355f;
+  }
+   td{
+  text-align:center;
+  color: #19355f;
+  }
+
+.active-button {
+      background-color: green;
+    }
+</style>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card ">
+         <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="card-header">
+            <h4 class="card-title">Users Applied for accounts</h4>
+          </div>
+         </div>
+          <div class="card-body">
+                <table>
+                    <thead>
+                            <th scope="col" width="15%">USER DETAILS</th>
+                            <th scope="col" width="15%">APPOINTEMENT TIME</th>
+                            <th scope="col" width="15%">BRANCH</th>
+                            <th scope="col" width="15%">More Details</th>
+                            <th scope="col" width="15%">Status</th>
+                            <th scope="col" width="15%">Action</th>
+
+
+                        </tr>
+                    </thead>
+                   <tbody>
+                    {% for name in accuser_data %}
+                        <tr>
+                            <td data-label="Due Date"> {{name.fname}} {{name.lname}} <br> {{name.email}} <br> {{name.phone}}<</td>
+                            <td data-label="Amount">{{name.apdate}} {{name.aptime}}</td>
+                            <td data-label="Amount">{{name.branch}}</td>
+                             <td data-label="Amount"><a href="/holderdetails/{{ name.id }}" style="text-decoration:underline">View</a></td>
+                            <td data-label="Amount">applied</td>
+                            <td data-label="Amount">
+
+                                <a data-toggle="tooltip" title="Delete Member" href="#" data-member-id="{{ name.id }}" class="delete-member"><i style="margin-left: 10px;" class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteLinks = document.querySelectorAll('.delete-member');
+
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            const memberId = this.getAttribute('data-member-id');
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Delete Member',
+                text: 'Are you sure you want to delete this member?',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: 'grey',
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/deletemembers/${memberId}`, {
+                        method: 'POST',
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Member Deleted!') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Member deleted successfully!',
+                            }).then(() => {
+                                window.location.href = "{{ url_for('members') }}";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while deleting the member.',
+                        });
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
+  {% endif %}
+{% endblock content %}
+{% block javascripts %}{% endblock javascripts %}

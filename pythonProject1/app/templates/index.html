@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+{% block content %}
+<style>
+
+ .cd-btn {
+ background:#eda4a4!important;
+  border: none;
+  outline: none;
+  color: #ffff !important;
+  transition: background-color 1s;
+}
+
+<!--.cd-btn:hover {-->
+<!--  background:linear-gradient(-90deg, black 10%, #4372b8 100%)!important;-->
+<!--}-->
+
+    .cd-btn a{
+     color: #ffff !important;
+    }
+    button{
+    border: none;
+    border-bottom: 1px solid black;
+    border-radius: 0px!important;
+    }
+
+    p{
+    margin-left:10px;
+    color:black;
+    }
+    .order-scroll{
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    border-radius:10px;
+    list-style:none;
+    padding:0px 10px;
+
+
+    }
+     .order-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .order-scroll::-webkit-scrollbar-track {
+        background:#174129;
+    }
+
+    .order-scroll::-webkit-scrollbar-thumb {
+        background-color: black ;
+    }
+
+    .order-scroll2{
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    border-radius:10px;
+    list-style:none;
+    padding:0px 10px;
+
+
+    }
+     .order-scroll2::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .order-scroll2::-webkit-scrollbar-track {
+        background:#174129;
+    }
+
+    .order-scroll2::-webkit-scrollbar-thumb {
+        background-color: black ;
+    }
+ tr{
+   margin-top:20px;
+   border-bottom: 1px solid black;
+
+   }
+  th{
+  text-align:center;
+  color: black;
+    padding:5px
+  }
+   td{
+  text-align:center;
+  color: black;
+    padding:5px;
+    cursor: pointer;
+  }
+   .list-item:hover{
+       background-color: #eda4a4;
+   }
+    .candidate-row:hover{
+       background-color: #eda4a4;
+   }
+
+<!--  .selected-list-item {-->
+<!--    background-color: #eda4a4;-->
+<!--}-->
+<!-- .selected-list-item2 {-->
+<!--    background-color: #eda4a4;-->
+<!--}-->
+
+.selectedcandidate{
+display:none;
+position: absolute;
+top:15%;
+left:25%;
+z-index:9999;
+}
+.card .card-header{
+color:black;
+}
+.count-div{
+width:24%
+}
+</style>
+    <div class="content">
+        <div class="row" style="justify-content: space-between;padding-left: 10px;"  >
+            <div class="count-div">
+                <div class="card card-chart">
+                    {% if session['role'] != 'admin' %}
+
+                       <div class="card-header" style="padding:10px 0px;">
+                           <div>
+                               <h4 class="card-title">Candidate Placed<i style="font-size:18px;margin-left:10px" class="fa fa-users" aria-hidden="true"></i>
+                            <span style="font-size:18px">{{ data_array.counters.candidateplace }}</span>
+                               </h4>
+                           </div>
+                       </div>
+                   {% elif session['role'] == 'admin' %}
+                       <div class="card-header" style="padding:10px 0px;">
+                           <div >
+                               <h4 class="card-title">Users<i style="font-size:18px;margin-left:10px" class="fa fa-users" aria-hidden="true"></i>
+                                   <span style="font-size:18px">{{ data_array.counters.total_users }}</span>
+                               </h4>
+                           </div>
+                       </div>
+                   {% endif %}
+                </div>
+            </div>
+            <div class="count-div">
+                <div class="card card-chart">
+                    <div class="card-header" style="padding:10px 0px;">
+                            <div>
+                                <h4 class="card-title">Select Candidate<i style="font-size:18px;margin-left:10px" class="fas fa-address-card" aria-hidden="true"></i>
+                                    <span style="font-size:18px" >{{ data_array.counters.totalcandidate }}</span>
+                                </h4>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="count-div">
+                <div class="card card-chart">
+                    <div class="card-header" style="padding:10px 0px;">
+                            <div>
+                                <h4 class="card-title">Submit Forms<i style="font-size:18px;margin-left:10px" class="fas fa-file-alt" aria-hidden="true"></i>
+                                    <span style="font-size:15px" >{{ data_array.counters.totalforms}}</span>
+                                </h4>
+                            </div>
+                    </div>
+                </div>
+            </div>
+           {% if session['role'] == 'admin' %}
+             <div class="count-div">
+                <div class="card card-chart">
+                    <div class="card-header" style="padding:10px 0px;">
+                            <div>
+                                <h4 class="card-title">Placements<i style="font-size:18px;margin-left:10px" class="fas fa-file-alt" aria-hidden="true"></i>
+                            <span style="font-size:15px">{{ data_array.counters.candidateplace }}</span>
+                                </h4>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        <div class="row">
+             <div class="col-lg-12">
+                <div class="card card-chart">
+                    <div class="card-header">
+                                <div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <h4 class="card-title">Open Positions</h4>
+                                         <div class="card-header" style="display:flex;">
+                                           <button style="margin-right:10px" class="card-title" id="candidate-button"><a href="/jobOders">
+                                             <i class="fas fa-eye"></i> View all</a></button>
+<!--                                               <button style="margin-right:10px" class="card-title" id="archive-button">-->
+<!--                                                   <a href="/jobOders?archive=true"> &lt;!&ndash; Pass archive=true as query parameter &ndash;&gt;-->
+<!--                                                       <i class="fas fa-download"></i> Show Archive-->
+<!--                                                   </a>-->
+<!--                                               </button>-->
+                                           <button class="card-title cd-btn" id="candidate-button"><a href="/newposition">
+                                             <i class="fas fa-plus"></i> add new position</a></button>
+                                          </div>
+                                    </div>
+
+                                     <div class="order-scroll">
+                                         <table style="margin:auto;">
+                                     <thead class=" text-primary">
+                                     <tr>
+                                         <th scope="col" width="250px">Posted On</th>
+                                         <th scope="col" width="150px">Pay Rate</th>
+                                         <th scope="col" width="150px">Shift</th>
+                                         <th scope="col" width="40px">Slots</th>
+                                         <th scope="col" width="140px">Action</th>
+                                     </tr>
+                                     </thead>
+                                     <tbody>
+                      {% for job_order in jobsorder %}
+                        {% if job_order.vacancy > 0 %}
+                          <tr
+                            data-toggle="tooltip"
+                            class="list-item red-tooltip"
+                            data-id="{{ job_order.company_id }}"
+                            data-archived="{{ job_order.archived }}">
+                           <td data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')">
+                               <span style="color: blue;">{{ job_order.created_at.strftime('%m-%d-%Y') }}</span><br>
+                               <span style="font-weight: 600">{{ job_order.company }}</span><br>
+                               needs: {{ job_order.title }}
+                           </td>
+                           <td data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')">${{ job_order.payrate }} ({{ job_order.salarytype }})</td>
+                           <td data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')">{{ job_order.starttime }} to {{ job_order.endtime }}</td>
+                           <td data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')" class="text-center">{{ job_order.vacancy }}</td>
+                           <td>
+                               {% if job_order.archived %}
+                               <i data-toggle="tooltip" title="click to unarchive Job" style="margin-right:5px;" onclick="unarchiveJob('{{ job_order.id }}')" class="fas fa-download"></i>
+                               {% else %}
+<!--                               <i data-toggle="tooltip" title="click to archive Job" style="margin-right:5px; color:red;" onclick="archiveJob('{{ job_order.id }}')" class="fas fa-archive"></i>-->
+                               <i data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')" class="fas fa-edit" onclick="showCandidateList('{{ job_order.id }}')"></i>
+                               {% endif %}
+                           </td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                </tbody>
+                                     </table>
+                                     </div>
+                                </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row selectedcandidate">
+             <div style="margin:auto;" class="col-lg-9 ">
+                <div class="card card-chart">
+                    <div class="card-header">
+                     <div>
+                         <div style="display:flex; justify-content:space-between; align-items:center;">
+                             <h4 class="card-title">Select Candidates</h4>
+                             <i onclick="close()" style="margin-bottom:10px; margin-right:30px" class="fas fa-window-close"></i>
+                         </div>
+                     <div class="order-scroll2">
+                     <table style="margin:auto;">
+                       <thead>
+                        <tr>
+                            <th scope="col" width="20%">Applicant Info</th>
+                            <th scope="col" width="25%">Job Detail</th>
+                            <th scope="col" width="10%">Resumes</th>
+                            <th scope="col" width="25%">Current Status</th>
+
+                        </tr>
+                      </thead>
+                       <tbody  data-toggle="tooltip" title="click to fill form">
+                         {% if alldata|length > 0 %}
+                         {% for name in alldata %}
+                              <tr class="candidate-row"data-id="{{ name.id }}-{{ name.status }}">
+                               <td data-label="Due Date">
+                                 {{ name.sender_name }} <br>
+                                 {% if name.email == 'No Email!' %}
+                                     <span style="color: red;">{{ name.email }}</span> <br>
+                                 {% else %}
+                                     {{ name.email }} <br>
+                                 {% endif %}
+                                 {{ name.phone_number }}
+                            </td>
+                               <td data-label="Amount">{{ name.subject_part1  }} <br> From: {{ name.subject_part2  }}</td>
+                                <td data-label="Amount">
+                                    <a href="#" style=" padding-bottom:2px; border-bottom: 1px solid black;"
+                                       onclick="showPdf('{{ name.id }}'); return false;">
+                                       View PDF
+                                    </a>
+                                </td>
+                                 <td> {{name.status}}</td>
+                           </tr>
+                         {% endfor %}
+                         {% else %}
+                              <tr>
+                                   <td class="text-center" colspan="5">Empty</td>
+                            </tr>
+                            {% endif %}
+                       </tbody>
+                     </table>
+                     </div>
+                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if session['role']=='admin' %}
+         <div class="row">
+           <div class="col-lg-6">
+                <div class="card card-chart">
+                    <div style="display:flex; align-items:center">
+                        <div class="card-header">
+                        <div class="row">
+                            <div class="col-sm-12 text-left">
+                                <h4 class="card-title">Interviews</h4>
+                            </div>
+                        </div>
+                    </div>
+                       <div class="card-header">
+                        <div class="row">
+                            <div class="col-sm-12 text-left">
+                                   <label>sort by date:</label>
+                            <select id="dateFilterforcan">
+                             <option value="select1" selected>Select</option>
+                            <option value="all1">Today</option>
+                            <option value="yesterday1">Yesterday</option>
+                            <option value="last3days1">Last 3 Days</option>
+                             <option value="custom1">Custom</option>
+                        </select>
+                             <div style="display:none;" id="customDateFormforcan">
+                                  <div style="padding: 10px;position: absolute;z-index:
+                                 9999;background: #ebebeb;display: block; box-shadow: 1px 1px 4px #998c8c;">
+                                      <form>
+                                        <label for="startDate1">Start Date:</label>
+                                        <input style="width:100%" type="date" id="startDate1" required><br>
+                                        <label for="endDate1">End Date:</label>
+                                        <input  style="width:100%" type="date" id="endDate1" required><br>
+                                           <br>
+                                        <button style="width:100%" type="submit">Apply</button>
+                                      </form>
+                                 </div>
+                             </div>
+
+                            </div>
+                        </div>
+                       </div>
+                        <div class="card-header">
+                        <div class="row">
+                            <div class="col-sm-12 text-left">
+                                   <label>sort by names:</label>
+                                   <select id="selectUsernamefor">
+                                     <option>select</option>
+                                     {% for username in data_array.usernames %}
+                                       <option>{{ username }}</option>
+                                     {% endfor %}
+                                   </select>
+                            </div>
+                        </div>
+                       </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="candidateChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-chart">
+                    <div style="display:flex; align-items:center">
+                        <div class="card-header">
+                        <div class="row">
+                            <div class="col-sm-12 text-left">
+                                <h4 class="card-title">Placements</h4>
+                            </div>
+                        </div>
+                    </div>
+                       <div class="card-header">
+                        <div class="row">
+                            <div class="col-sm-12 text-left">
+                                   <label>sort by date:</label>
+                            <select id="dateFilterfordeal">
+                           <option value="select2" selected>Select</option>
+                            <option value="all2">Today</option>
+                            <option value="yesterday2">Yesterday</option>
+                            <option value="last3days2">Last 3 Days</option>
+                             <option value="custom2">Custom</option>
+                        </select>
+                          <div style="display:none;" id="customDateFormfordeal">
+                                  <div style="padding: 10px;position: absolute;z-index:
+                                 9999;background: #ebebeb;display: block; box-shadow: 1px 1px 4px #998c8c;">
+                                      <form>
+                                        <label for="startDate2">Start Date:</label>
+                                        <input style="width:100%" type="date" id="startDate2" required><br>
+                                        <label for="endDate2">End Date:</label>
+                                        <input  style="width:100%" type="date" id="endDate2" required><br>
+                                           <br>
+                                        <button style="width:100%" type="submit">Apply</button>
+                                      </form>
+                                 </div>
+                             </div>
+                            </div>
+                        </div>
+                       </div>
+                        <div class="card-header">
+                        <div class="row">
+                            <div class="col-sm-12 text-left">
+                                   <label>sort by names:</label>
+                                   <select id="selectUsernamefordeal">
+                                     <option>select</option>
+                                     {% for username in data_array.usernames %}
+                                       <option>{{ username }}</option>
+                                     {% endfor %}
+                                   </select>
+                            </div>
+                        </div>
+                       </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="DealChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock content %}
+{% block javascripts %}
+    {% if msg == "task not set" %}
+    <script>
+        // Use JavaScript to show an alert when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+<!--            alert("please add weekly target!");-->
+            Swal.fire({
+                    icon: 'warning',
+                    title: 'Reminder',
+                    text: 'please add weekly target!',
+                })
+        });
+    </script>
+    {% endif %}
+
+<script>
+ var userRole = "{{ session['role'] }}";
+ console.log("userRole",userRole)
+
+document.addEventListener("DOMContentLoaded", function () {
+        var orderScroll = document.querySelector(".order-scroll");
+
+        if (userRole === "user") {
+            orderScroll.style.maxHeight = "500px";
+        } else if (userRole === "admin") {
+            orderScroll.style.maxHeight = "200px";
+        }
+    });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+    var dataFromServer = {{ data_array|tojson }};
+
+    $(document).ready(function () {
+        // Javascript method's body can be found in js/demos.js
+        demo.initDashboardPageCharts();
+    });
+ document.addEventListener("click", function(event) {
+    const closeIcon = event.target.closest(".fas.fa-window-close");
+    if (closeIcon) {
+        const selectedCandidateDiv = document.querySelector('.selectedcandidate');
+        selectedCandidateDiv.style.display = 'none';
+    }
+});
+</script>
+<script>
+    function showPdf(emailId) {
+    const pdfWindow = window.open(`/pdf_content/${emailId}`);
+    markEmailAsRead(emailId);
+}
+var jobid = "";
+
+function showCandidateList(listId, orderId) {
+    console.log("show list")
+    const alldataLength = {{ alldata|length }};
+
+    if (alldataLength === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Candidates Selected',
+            text: 'There are no candidates to display.',
+        });
+        return; // Exit the function if there are no candidates
+    }
+
+    const selectedCandidateDiv = document.querySelector('.selectedcandidate');
+    jobid = listId;
+    OrderId = orderId;
+    console.log(jobid, OrderId);
+    selectedCandidateDiv.style.display = 'block';
+
+    const clickedListItem = document.querySelector(`.list-item[data-id="${listId}"]`);
+    clickedListItem.classList.add('selected-list-item');
+
+    const candidateRows = document.querySelectorAll('.candidate-row');
+
+    candidateRows.forEach(row => {
+        row.addEventListener('click', function() {
+            const candidateDataId = row.getAttribute('data-id');
+            const [candidateId, candidateStatus] = candidateDataId.split('-'); // Split the data-id
+            redirectToReportingForm(candidateId, candidateStatus, jobid, OrderId); // Pass candidateStatus
+            clickedListItem.classList.remove('selected-list-item');
+        });
+    });
+}
+
+
+function redirectToReportingForm(candidateId, candidateStatus)  {
+    const candidateRows = document.querySelectorAll('.candidate-row');
+    candidateRows.forEach(candidateRow => {
+        candidateRow.classList.remove('selected-list-item');
+    });
+
+    // Hide the selectedCandidateDiv
+    const selectedCandidateDiv = document.querySelector('.selectedcandidate');
+    selectedCandidateDiv.style.display = 'none';
+
+    // Redirect to the reporting form
+     if (candidateStatus !== "Candidate Placement") {
+        window.location.href = `/onereporting_form/${candidateId}/job/${jobid}/OrderId/${OrderId}`;
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Already placed!",
+        });
+     }
+}
+
+// display sweetalert(popup)
+    function archiveJob(jobId) {
+        fetch(`/archive_job/${jobId}`, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Job archived successfully!',
+                }).then(() => {
+                    window.location.href = '{{ url_for('jobOders') }}';
+                });
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the form.');
+        });
+    }
+</script>
+{% endblock javascripts %}

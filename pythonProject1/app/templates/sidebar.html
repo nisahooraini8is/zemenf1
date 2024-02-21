@@ -1,0 +1,87 @@
+
+    <div class="sidebar">
+        <div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="" class="simple-text logo-normal">
+                    {{ session['role'] }}
+                </a>
+            </div>
+            <ul class="nav">
+                 <li class="{% if request.path == '/index' %}active{% endif %}">
+                <a href="/index">
+                    <i class="fas fa-bars"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
+        {% if session['role']=='admin' %}
+            <li class="{% if request.path == '/members' %}active{% endif %}">
+                <a href="/members">
+                 <i class="fas fa-users"></i>
+                    <p>League Members</p>
+                </a>
+            </li>
+        {% endif %}
+                <li class="{% if request.path == '/candidate' or request.path == '/selecteddata' %}active{% endif %}">
+                    <a href="/candidate">
+                        <i class="fas fa-retweet"></i>
+                       <p>Candidates</p>
+                  </a>
+               </li>
+            <li class="{% if request.path == '/jobs' %} active {% endif %}">
+                <a href="/jobs">
+                    <i class="fas fa-gamepad"></i>
+                    <p>Posted jobs</p>
+                </a>
+            </li>
+
+            <li class="{% if request.path == '/jobOders' %} active {% endif %}">
+                <a href="/jobOders">
+                    <i class="fas fa-tasks"></i>
+                    <p>Open Positions </p>
+                </a>
+            </li>
+
+                <li class="{% if request.path == '/OneReportingForm' %}active{% endif %}">
+                    <a href="/OneReportingForm">
+                    <i class="fas fa-book"></i>
+                        <p>One Reporting Form</p>
+                    </a>
+                </li>
+
+                <li class="{% if request.path == '/forms' %}active{% endif %}">
+                <a href="/forms">
+                    <i class="fas fa-history"></i>
+                    <p>Forms History</p>
+                </a>
+                </li>
+                <li class="{% if request.path == '/onboradingdetails' %}active{% endif %}">
+                    <a href="/onboradingdetails">
+                    <i class="fas fa-book"></i>
+                        <p>Digital Onboarding</p>
+                    </a>
+                </li>
+<!--                <li class="{% if request.path == '/target' %}active{% endif %}">-->
+<!--                <a href="/target">-->
+<!--                    <i class="fas fa-dot-circle"></i>-->
+<!--                    <p>Target History</p>-->
+<!--                </a>-->
+<!--                </li>-->
+
+                {% if session['role']=='user' %}
+                  <li class="{% if request.path == '/user' %}active{% endif %}">
+                     <a href="/user">
+                        <i class="fas fa-user-circle"></i>
+                         <p>Profile</p>
+                     </a>
+                 </li>
+                {% endif %}
+
+                <li class="{% if request.path == '/logout' %}active{% endif %}">
+                    <a href="/logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p>Logout</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>

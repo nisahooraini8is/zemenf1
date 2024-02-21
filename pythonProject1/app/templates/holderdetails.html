@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %} Members {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block content %}
+{% if session['role']=='admin' %}
+<style>
+   tr{
+   margin-top:20px;
+   border-bottom: 1px solid black;
+   width:100%;
+   }
+  th{
+  text-align:center;
+  color: #19355f;
+  }
+   td{
+  text-align:center;
+  color: #19355f;
+  }
+
+.active-button {
+      background-color: green;
+    }
+</style>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card ">
+         <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="card-header">
+            <h4 class="card-title">Verification Details</h4>
+          </div>
+         </div>
+          <div class="card-body">
+          <form>
+            <div style="display:flex;">
+              <div>
+                <h4 class="card-title">person Selfie:</h4>
+              <div>
+                   {% if selfie_image %}
+            <img style="width: 30%; border-radius: 0.2857rem; display: block; margin: auto;"
+                 src="data:image/jpeg;base64,{{ selfie_image }}" alt="Person Selfie">
+        {% else %}
+            <p>No Person Selfie available</p>
+        {% endif %}
+              </div>
+              </div>
+            <div><h4 class="card-title">Id Card:</h4><br>
+               <div style="display:flex;">
+              <div>
+                <p class="card-title">Front:</p>
+              <div>
+                   {% if id_front_image %}
+            <img style="width:75%; border-radius: 0.2857rem; display: block; margin: auto;"
+                 src="data:image/jpeg;base64,{{ id_front_image }}" alt="Id Card Front">
+        {% else %}
+            <p>No Id Card Front available</p>
+        {% endif %}
+              </div>
+              </div>
+            <div><p class="card-title">Back:</p><br>
+              <div>
+                   {% if id_back_image %}
+            <img style="width:75%; border-radius: 0.2857rem; display: block; margin: auto;"
+                 src="data:image/jpeg;base64,{{ id_back_image }}" alt="Id Card Back">
+        {% else %}
+            <p>No Id Card Back available</p>
+        {% endif %}
+              </div></div>
+          </div>
+          </div>
+        </div>
+                       <div class="row">
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">First Name</label>
+                                    <input type="email" name="test" class="form-control" placeholder="{{data.fname}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="email" name="test" class="form-control" placeholder="{{data.lname}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="text" name="text" class="form-control" placeholder="{{data.phone}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Secondary Number</label>
+                                    <input type="text" name="text" class="form-control" placeholder="{{data.sphone}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">D.O.B</label>
+                                    <input type="text" name="test" class="form-control" placeholder="{{data.birth_date}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" name="email" class="form-control" placeholder="{{data.email}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                       <div class="row">
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Tin</label>
+                                    <input type="text" name="text" class="form-control" placeholder="{{data.tin}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">City</label>
+                                    <input type="text" name="email" class="form-control" placeholder="{{data.city}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Postat code</label>
+                                    <input type="email" name="test" class="form-control" placeholder="{{data.pc}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Street Address</label>
+                                    <input type="email" name="email" class="form-control" placeholder="{{data.street}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="row">
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Residential Status</label>
+                                    <input type="text" name="test" class="form-control" placeholder="{{data.res}}">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+                             <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label>Province</label>{{data.province}}
+                                    <select name="selected_role" class="form-control" id="roleSelect">
+                        <option value="Tigray"{% if data.province=="Tigray" %} selected {%
+                                            endif %}>
+                            Tigray
+
+                        </option>
+                        <option value="Afar"{% if data.province=="Afar" %} selected {%
+                                            endif %}>
+                            Afar
+
+                        </option>
+                        <option value="Oromia"{% if data.province=="Oromia" %} selected {%
+                                            endif %}>
+                            Oromia
+
+                        </option>
+                        <option value="Somali"{% if data.province=="Somali" %} selected {%
+                                            endif %}>
+                            Somali
+
+                        </option>
+                        <option value="Benishangul-Gumuz"{% if data.province=="Benishangul-Gumuz" %} selected {%
+                                            endif %}>
+                            Benishangul-Gumuz
+
+                        </option>
+                        <option value="Southern Nations"{% if data.province=="Southern Nations" %} selected {%
+                                            endif %}>
+
+                            Southern Nations
+
+                        </option>
+                        <option value="Nationalities"{% if data.province=="Nationalities" %} selected {%
+                                            endif %}>
+
+                            Nationalities
+
+                        </option>
+                        <option value="Gambella and Harari"{% if data.province=="Gambella and Harari" %} selected {%
+                                            endif %}>
+
+                            Gambella and Harari
+
+                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                                <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label>Employment Status</label>
+                                    <select name="selected_role" class="form-control" id="roleSelect">
+                                           <option value="">Select Employement Status</option>
+                        <option value="Full-Time"{% if data.empstatus=="Full-Time" %} selected {%
+                                            endif %}>Full-Time</option>
+                        <option value="Part-Time" {% if data.empstatus=="Part-Time" %} selected {%
+                                            endif %}>Part-Time</option>
+                        <option value="Contract" {% if data.empstatus=="Contract" %} selected {%
+                                            endif %}>Contract</option>
+                        <option value="Temporary" {% if data.empstatus=="Temporary" %} selected {%
+                                            endif %}>Temporary</option>
+                        <option value="Intern" {% if data.empstatus=="Intern" %} selected {%
+                                            endif %}>Intern</option>
+                        <option value="Freelancer" {% if data.empstatus=="Freelancer" %} selected {%
+                                            endif %}>Freelancer</option>
+                        <option value="Self-Employed" {% if data.empstatus=="Self-Employed" %} selected {%
+                                            endif %}>Self-Employed</option>
+                    <option value="Un-Employed" {% if data.empstatus=="Un-Employed" %} selected {%
+                                            endif %}>Un-Employed</option>
+                                    </select>
+                                </div>
+                            </div>
+                              <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label>Source Of Income</label>{{data.sInc}}
+                                    <select name="selected_role" class="form-control" id="roleSelect">
+                            <option value="Employment" {% if data.sInc=="Employment" %} selected {%
+                                            endif %}>Employment</option>
+                        <option value="Self-Employment<" {% if data.sInc=="Self-Employment" %} selected {%
+                                            endif %}>Self-Employment</option>
+                        <option value="Freelance" {% if data.sInc=="Freelance" %} selected {%
+                                            endif %}>Freelance</option>
+                        <option value="Business Owner" {% if data.sInc=="Business Owner" %} selected {%
+                                            endif %}>Business Owner</option>
+                        <option value="Investment" {% if data.sInc=="Investment" %} selected {%
+                                            endif %}>Investment</option>
+                        <option value="Investment" {% if data.sInc=="Investment" %} selected {%
+                                            endif %}>Retirement</option>
+                        <option value="Goverment Assistance" {% if data.sInc=="Goverment Assistance" %} selected {%
+                                            endif %}>Goverment Assistance</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="row">
+
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label class="form-label">Gross Income</label>
+                                    <input type="text" name="test" class="form-control" placeholder="$60,000">
+                                    <section class="display-error-message">
+                                    </section>
+                                </div>
+                            </div>
+
+
+                        <div class="card-footer">
+    <button type="button" class="btn btn-fill btn-primary btn-approve">Approve</button>
+</div>
+
+                    </div>
+          </form>
+
+
+      </div>
+
+    </div>
+      </div>
+    </div>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+<script>
+    // Function to handle the "Approve" button click event
+    function handleApproveButtonClick() {
+        // Display SweetAlert2 popup
+         Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Approved!',
+                            }).then(() => {
+             window.location.href = "{{ url_for('subdetails') }}";
+          });
+    }
+
+    // Attach event listener to the "Approve" button
+    document.querySelector('.btn-approve').addEventListener('click', handleApproveButtonClick);
+</script>
+{% endif %}
+{% endblock content %}
+{% block javascripts %}{% endblock javascripts %}

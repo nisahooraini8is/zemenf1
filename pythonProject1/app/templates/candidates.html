@@ -1,0 +1,965 @@
+{% extends "base.html" %}
+
+{% block title %} Tables {% endblock %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+<style>
+  /* Pagination styles */
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .pagination-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+  }
+
+  .pagination-list li {
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  .pagination-list li a {
+    display: inline-block;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #ffff;
+  }
+
+  .pagination-list li a:hover {
+    background-color: #f0f0f0;
+  }
+
+  /* Active page link */
+  .pagination-list li.active a {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+  }
+
+  /* Disabled page link */
+  .pagination-list li.disabled a {
+    color: #ccc;
+    pointer-events: none;
+    /* Disable click events */
+    cursor: default;
+  }
+
+  /* Ellipsis (...) */
+  .pagination-list li.ellipsis::after {
+    content: '...';
+    padding: 5px;
+  }
+
+  @media (max-width: 1120px) {
+    .nisadisplay {
+      display: block;
+    }
+  }
+
+  /* Hide ellipsis on mobile devices */
+  @media (max-width: 768px) {
+    .pagination-list li.ellipsis {
+      display: none;
+    }
+  }
+
+  .previous {
+    text-decoration: none;
+    display: inline-block;
+    padding: 8px 16px;
+    width: 110px;
+  }
+
+  .previous:hover {
+    background-color: #ddd;
+    color: black;
+  }
+
+  .next {
+    text-decoration: none;
+    display: inline-block;
+    padding: 8px 16px;
+    width: 78px;
+  }
+
+  .next:hover {
+    background-color: #ddd;
+    color: black;
+  }
+
+  .previous {
+    background-color: #f1f1f1;
+    color: black;
+  }
+
+  .next {
+    background-color: black;
+    color: white;
+  }
+
+  #loadingOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    /* Adjust the opacity and color as needed */
+    z-index: 1000;
+    /* Adjust the z-index to ensure it's above other elements */
+  }
+
+  #loadingIndicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1001;
+    /* Ensure the spinner is above the overlay */
+  }
+
+  .custom-spinner {
+    border: 10px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 8px solid black;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  tr {
+    margin-top: 20px;
+    border-bottom: 1px solid black;
+
+  }
+
+  th {
+    text-align: center;
+    color: black;
+    padding: 5px
+  }
+
+  td {
+    text-align: center;
+    color: black;
+    padding: 5px
+  }
+
+  .export {
+    list-style: none;
+    padding: 10px;
+    color: black;
+    box-shadow: 0px 2px 9px 0px gray;
+    position: absolute;
+    right: 20px;
+    top: 140px;
+  }
+
+  .export p {
+    color: black;
+    cursor: pointer;
+    padding: 5px 0px;
+  }
+
+  .export li:hover p {
+    background: black;
+    color: #ffffff;
+  }
+
+  .selectcountryfilter {
+    margin-top: 20px;
+    padding-left: 2px 0px;
+    margin-right: 17px;
+    border: 2px solid black;
+    border-radius: 5px
+  }
+
+  .selectcountryfilterform {
+    width: 100%;
+  }
+
+  .active-button {
+    background-color: green;
+  }
+
+  .search {
+    /* <!--    padding: 5px;-->
+<!--    display: none;--> */
+    outline: none;
+    border: none;
+    border-bottom: 1px solid black;
+
+  }
+
+  .hicon {
+    margin-right: 20px;
+    font-size: 22px !important;
+    position: relative;
+  }
+
+  .hicon:nth-child(1):after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: red;
+    border-radius: 10px;
+    left: 13px;
+    top: 7px;
+    transform: scale(0.5);
+    box-shadow: 0 0 0 0 rgba(255, 82, 82, 1);
+    animation: pulse-red 2s infinite;
+    cursor: pointer;
+
+  }
+
+  @keyframes pulse-red {
+    0% {
+      transform: scale(0.85);
+      box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+    }
+
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 25px rgba(255, 82, 82, 0);
+    }
+
+    100% {
+      transform: scale(0.85);
+      box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+    }
+  }
+
+  .search-div {
+    display: flex;
+    align-items: baseline;
+    margin-top: 20px;
+    position: relative;
+    padding-left: 15px
+  }
+
+  .data-row.unread {
+    background-color: #f0f0f0;
+    /* Apply a different background color for read rows */
+  }
+
+  .pagination {
+    justify-content: flex-end;
+  }
+
+  .select2-results__option {
+    color: black !important;
+
+  }
+</style>
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card ">
+        <div class="new" style="">
+          <div style="display: flex;">
+            <form action="{{ url_for('candidate') }}" method="">
+              <div class="card-header" style="margin-top:10px;">
+                <button class="card-title {% if active_url == 'candidate' %}active-button{% endif %}"
+                  id="candidate-button">Applied Candidates</button>
+              </div>
+            </form>
+            <form action="{{ url_for('selecteddata') }}" method="">
+              <div class="card-header" style="margin-top:10px;">
+                <button class="card-title {% if active_url == 'selecteddata' %}active-button{% endif %}"
+                  id="selected-button">Selected Candidates</button>
+              </div>
+            </form>
+<!--            <form action="{{ url_for('registereddata') }}" method="">-->
+<!--              <div class="card-header" style="margin-top:10px;">-->
+<!--                <button class="card-title {% if active_url == 'registereddata' %}active-button{% endif %}"-->
+<!--                  id="registered-button">Registered Candidates</button>-->
+<!--              </div>-->
+<!--            </form>-->
+            <div class="card-header" style="margin-top: 20px;">
+              <a href="/addmanualemployee" class="card-tite"
+                style="color:black;text-decoration:underline;font-weight:600">+ Add Candidate</a>
+            </div>
+          </div>
+          <div class="nisadisplay" style="margin: 0px 20px;">
+            <div style="display: flex;justify-content: flex-end;">
+              <div class="search-div">
+                <input id="searchKeyword" type="text" class="search">
+                <i class="fa fa-search hicon sicon" onclick="searchme()" style="color:black"></i>
+              </div>
+              <i onclick="exportMore()" style="margin-top: 24px; padding-right: 15px;color:black" class="fas fa-ellipsis-v"
+                data-toggle="tooltip" title="export data"></i>
+              <div id="export" style="display:none">
+                <ul class="export">
+                  {% if url_for('candidate') == request.path %}
+                  <li>
+                    <form method="post" action="{{ url_for('export_csv') }}">
+                      <input type="hidden" name="export_route" value="/candidate">
+                      <button type="submit" class="btn btn-primary">Export CSV (Applied)</button>
+                    </form>
+                  </li>
+                  {% elif url_for('registereddata') == request.path %}
+                  <li>
+                    <form method="post" action="{{ url_for('export_csv') }}">
+                      <input type="hidden" name="export_route" value="/registereddata">
+                      <button type="submit" class="btn btn-primary">Export CSV (Registered)</button>
+                    </form>
+                  </li>
+                  {% else %}
+                  <li>
+                    <form method="post" action="{{ url_for('export_csv') }}">
+                      <input type="hidden" name="export_route" value="/selecteddata">
+                      <button type="submit" class="btn btn-primary">Export CSV (Selected)</button>
+                    </form>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+              <div id="loadingIndicator" style="display: none;">
+                <div class="custom-spinner"></div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+
+
+            <div style="display: flex;">
+              <div style="margin-top:15px">
+                <form class="selectcountryfilterform">
+                  <select class="selectcountryfilter" id="year_select" name="year_select">
+                    <option value="">Sort by Year</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+<!--                    <option value="2022">2022</option>-->
+<!--                    <option value="2021">2021</option>-->
+                  </select>
+                </form>
+              </div>
+              <div style="margin-top:15px;margin-left:10px">
+                <form class="selectcountryfilterform">
+                  <select class="selectcountryfilter" id="country_select" name="country_select">
+                    <option value="">Sort by country</option>
+                    {% for country in all_countries %}
+                    {% set display_name = country.name %}
+                    {% if country.name|length > 11 %}
+                    {% set display_name = country.name[:11] ~ '...' %}
+                    {% endif %}
+                    <option value="{{ display_name }} ">{{ display_name }} ({{ phone_codes.get(country.alpha_2, '') }} )
+                    </option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </div>
+              <div style="margin-top:15px;margin-left:10px">
+                <form class="selectcountryfilterform">
+                  <select class="selectcountryfilter" id="subj_select" name="subj_select">
+                    <option value="">Sort by Job Title</option>
+                    {% for line in unique_lines %}
+                    <option value="{{ line }}">{{ line }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="">
+            <table style="overflow-x: auto;" id="dataTable">
+              <thead>
+                <tr>
+                  <th scope="col" width="20%">Applicant Info</th>
+                  <th scope="col" width="25%">Job Detail</th>
+                  <th scope="col" width="8%">Date</th>
+                  <th scope="col" width="10%">Resumes</th>
+                  <th scope="col" width="15%">Current Status</th>
+                  <th scope="col" width="15%">Action</th>
+                </tr>
+              </thead>
+              <tbody id="emailDataBody">
+                {% if url_for('registereddata') == request.path %}
+                {% if registereddata|length > 0 %}
+                {% for name in registereddata %}
+                <tr class="data-row{% if name.is_read %} read{% else %} unread{% endif %}"
+                  data-email-id="{{ name.id }}">
+                  <td data-label="Due Date">
+                      {{ name.sender_name }} <br>
+                      {% if name.email == 'No Email!' %}
+                      <span style="color: red;">{{ name.email }}</span> <br>
+                      {% else %}
+                      {{ name.email }} <br>
+                      {% endif %}
+                      {% if name.phone_number|length == 11 or name.phone_number|length == 10 or name.phone_number|length == 12 %}
+                          <a href="tel:{{ name.phone_number }}">{{ name.phone_number }}</a>
+                      {% else %}
+                          -
+                      {% endif %}
+
+                  </td>
+
+                  <td data-label="Amount">{{ name.subject_part2 }} <br>{{ name.subject_part1 }}</td>
+                  <td data-label="Amount">{{ name.formatted_date }}</td>
+                  <td data-label="Amount">
+                    {% if name.file_content is none and name.pdf_content_json is none %}
+                    No PDF
+                    {% else %}
+                    <a href="#" style="padding-bottom:2px; border-bottom: 1px solid black;" {% if name.file_content is
+                      none %} onclick="return false;" {% else %}
+                      onclick="markEmailAsRead('{{ name.id }}'); showPdf('{{ name.id }}'); return false;" {% endif %}>
+                      View PDF
+                    </a>
+                    {% endif %}
+                  </td>
+                  {% if url_for('selecteddata') == request.path %}
+                  <td>
+                    {% if name.status == 'Candidate Placement' %}
+                    Candidate placed
+                    {% else %}
+                    {{ name.status }}
+                    {% if session['role'] %}
+                    <a style="text-align:center" href="/onereporting_form/{{ name.id }}">
+                      <br>
+                      {% if name.status != 'Candidate Placement' %}
+                      <i style="font-size:18px;" class="fas fa-edit"></i>
+                      {% endif %}
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                  </td>
+                  {% else %}
+                  <td style="text-align:center">applied</td>
+                  {% endif %}
+                  {% if name.action == 'Interested' %}
+                  <td>
+                    <a href="/candidateprofile/{{name.email}}" data-toggle="tooltip" title="profile"><i
+                        style="font-size:20px; margin-right:8px; " class="fas fa-user-circle"></i></a>
+                    <a href="" data-toggle="tooltip" title="change status to applied"
+                      onclick="handleSelectionChange('{{ name.id }}', 'Reverse changes')"><i style="font-size:20px;"
+                        class="fas fa-undo"></i></a>
+                    <a href="" data-toggle="tooltip" title="move back to applied candidates"
+                      onclick="handleSelectionChange('{{ name.id }}', 'move to applied')"><i
+                        style="font-size:18px; margin-left:8px" class="fas fa-exchange-alt"></i></a>
+
+                  </td>
+                  {% else %}
+                  <td>
+                    <a href="" data-toggle="tooltip" title="Select candidate"
+                      onclick="handleSelectionChange('{{ name.id }}', 'Interested')"><i
+                        style="font-size:20px; margin-right:8px;" class="fas fa-check-square"></i></a>
+                    <!--                                  <a href="" onclick="handleSelectionChange('{{ name.id }}', 'Not Interested')"><i  style="color:red; font-size:20px;"    class="fas fa-times"></i></a>-->
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td class="text-center" colspan="5">Empty</td>
+                </tr>
+                {% endif %}
+                {% else %}
+                {% if alldata|length > 0 %}
+                {% for name in alldata %}
+                <tr class="data-row{% if name.is_read %} read{% else %} unread{% endif %}"
+                  data-email-id="{{ name.id }}">
+                  <td data-label="Due Date">
+                    {{ name.sender_name }} <br>
+                    {% if name.email == 'No Email!' %}
+                    <span style="color: red;">{{ name.email }}</span> <br>
+                    {% else %}
+                    {{ name.email }} <br>
+                    {% endif %}
+                    <a href="tel:{{name.phone_number}}">{{ name.phone_number }}</a>
+                  </td>
+                  <td data-label="Amount">{{ name.subject_part2 }} <br>{{ name.subject_part1 }}</td>
+                  <td data-label="Amount">{{ name.formatted_date }}</td>
+                  <td data-label="Amount">
+                    {% if name.file_content is none and name.pdf_content_json is none %}
+                    No PDF
+                    {% else %}
+                    <a href="#" style="padding-bottom:2px; border-bottom: 1px solid black;" {% if name.file_content is
+                      none %} onclick="return false;" {% else %}
+                      onclick="markEmailAsRead('{{ name.id }}'); showPdf('{{ name.id }}'); return false;" {% endif %}>
+                      View PDF
+                    </a>
+                    {% endif %}
+                  </td>
+                  {% if url_for('selecteddata') == request.path %}
+                  <td>
+                    {% if name.status == 'Candidate Placement' %}
+                    Candidate placed
+                    {% else %}
+                    {{ name.status }}
+                    {% if session['role'] %}
+                    <a style="text-align:center" href="/onereporting_form/{{ name.id }}">
+                      <br>
+                      {% if name.status != 'Candidate Placement' %}
+                      <i style="font-size:18px;" class="fas fa-edit"></i>
+                      {% endif %}
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                  </td>
+                  {% else %}
+                  <td style="text-align:center">applied</td>
+                  {% endif %}
+                  {% if name.action == 'Interested' %}
+                  <td>
+                    <a href="/candidateprofile/{{name.email}}" data-toggle="tooltip" title="profile"><i
+                        style="font-size:20px; margin-right:8px; " class="fas fa-user-circle"></i></a>
+                    <a href="" data-toggle="tooltip" title="change status to applied"
+                      onclick="handleSelectionChange('{{ name.id }}', 'Reverse changes')"><i style="font-size:20px;"
+                        class="fas fa-undo"></i></a>
+                    <a href="" data-toggle="tooltip" title="move back to applied candidates"
+                      onclick="handleSelectionChange('{{ name.id }}', 'move to applied')"><i
+                        style="font-size:18px; margin-left:8px" class="fas fa-exchange-alt"></i></a>
+
+                  </td>
+                  {% else %}
+                  <td>
+                    <a href="" data-toggle="tooltip" title="Select candidate"
+                      onclick="handleSelectionChange('{{ name.id }}', 'Interested')"><i
+                        style="font-size:20px; margin-right:8px;" class="fas fa-check-square"></i></a>
+                    <!--                                  <a href="" onclick="handleSelectionChange('{{ name.id }}', 'Not Interested')"><i  style="color:red; font-size:20px;"    class="fas fa-times"></i></a>-->
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td class="text-center" colspan="5">Empty</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+              </tbody>
+            </table>
+            <div id="pdfViewer" style="display: none;">
+              <object id="pdfObject" type="application/pdf" width="100%" height="800px"></object>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pagination" id="pagination_nav">
+    <!-- Pagination controls -->
+    <div class="pagination">
+      <ul class="pagination-list">
+        <li><a href="#" data-page="1" data-year="{{ selected_year }}" data-country="{{ selected_country }}"
+            data-subject="{{ selected_subject }}">&laquo;</a></li> <!-- Previous page -->
+        {% for page_num in range(1, total_pages + 1) %}
+        <!-- Include filter parameters in the pagination link -->
+        <li><a href="#" data-page="{{ page_num }}" data-year="{{ selected_year }}" data-country="{{ selected_country }}"
+            data-subject="{{ selected_subject }}">{{ page_num }}</a></li>
+        {% endfor %}
+        <li><a href="#" data-page="{{ total_pages }}" data-year="{{ selected_year }}"
+            data-country="{{ selected_country }}" data-subject="{{ selected_subject }}">&raquo;</a></li>
+        <!-- Next page -->
+      </ul>
+    </div>
+    <input type="hidden" id="total_pages" value="{{ total_pages }}">
+
+  </div>
+</div>
+
+
+  {% endblock content %}
+  {% block javascripts %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('.selectcountryfilter').select2();
+    });
+    window.addEventListener('load', function () {
+      console.log("hello nisa")
+      var currentUrl = window.location.pathname;
+      var candidateButton = document.getElementById("candidate-button");
+      var selectedButton = document.getElementById("selected-button");
+      var registeredButton = document.getElementById("registered-button");
+
+      if (currentUrl === "{{ url_for('candidate') }}") {
+        candidateButton.style.backgroundColor = "black";
+        candidateButton.style.color = "#ffffff";
+      }
+      if (currentUrl === "{{ url_for('selecteddata') }}") {
+        selectedButton.style.backgroundColor = "black";
+        selectedButton.style.color = "#ffffff";
+      }
+      if (currentUrl === "{{ url_for('registereddata') }}") {
+        registeredButton.style.backgroundColor = "black";
+        registeredButton.style.color = "#ffffff";
+      }
+    });
+    function showPdf(emailId) {
+      markEmailAsRead(emailId);
+      updateRowStatus(emailId, true);
+      pdfWindow = window.open(`/pdf_content/${emailId}`);
+      pdfWindow.addEventListener('beforeunload', () => {
+        markEmailAsRead(emailId); // Call markEmailAsRead when PDF tab/window is closed
+      });
+    }
+
+    function markEmailAsRead(emailId) {
+      fetch(`/mark_as_read/${emailId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            updateRowStatus(emailId, true); // Update the row status
+            localStorage.setItem(`email_${emailId}`, 'true');
+          }
+        })
+        .catch(error => {
+          console.error('Error marking email as read:', error);
+        });
+    }
+
+    function updateRowStatus(emailId, isRead) {
+      const row = document.querySelector(`tr[data-email-id="${emailId}"]`);
+      if (row) {
+        row.classList.remove('unread', 'read');
+        row.classList.add(isRead ? 'read' : 'unread');
+      }
+    }
+    window.addEventListener('load', function () {
+      const rows = document.querySelectorAll('.data-row');
+      rows.forEach(row => {
+        const emailId = row.getAttribute('data-email-id');
+        const isRead = localStorage.getItem(`email_${emailId}`);
+        if (isRead !== null) {
+          updateRowStatus(emailId, isRead === 'true');
+        }
+      });
+    });
+
+    function handleSelectionChange(id, selectedOption) {
+      console.log(selectedOption);
+      if (selectedOption == 'Interested' || selectedOption == 'Reverse changes' || selectedOption == 'move to applied') {
+        fetch('/updatemail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: id, selectedOption: selectedOption }), // Include the 'id' parameter here
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message) {
+              window.location.href = "{{ url_for('selecteddata') }}";
+            }
+            // Handle the response from the server if needed
+            console.log(data);
+          })
+          .catch((error) => {
+            // Handle errors if any
+            console.error('Error:', error);
+          });
+      } else {
+        fetch('/deletemail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: id }), // Include the 'id' parameter here
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message) {
+              window.location.href = "{{ url_for('candidate') }}";
+            }
+            // Handle the response from the server if needed
+            console.log(data);
+          })
+          .catch((error) => {
+            // Handle errors if any
+            console.error('Error:', error);
+          });
+      }
+    }
+
+
+
+    function exportMore() {
+      var exportDiv = document.getElementById("export");
+      exportDiv.style.display = exportDiv.style.display === "none" ? "block" : "none";
+      console.log("exportDiv.style.display = 'block'");
+    };
+
+
+
+    document.getElementById("searchKeyword").addEventListener("keyup", function (event) {
+      console.log("hello")
+      if (event.key === "Enter") {
+        searchPdf();
+      }
+    });
+
+    function searchme() {
+      searchPdf();
+    }
+
+
+    function searchPdf() {
+      const keywordInput = document.getElementById("searchKeyword");
+      const loadingIndicator = document.getElementById("loadingIndicator");
+      var currentUrl = window.location.pathname.split('/').pop();
+
+
+      console.log("current_url", currentUrl)
+      if (!keywordInput || !loadingIndicator) {
+        console.error("Required elements not found in the DOM.");
+        return;
+      }
+
+      const keyword = keywordInput.value.trim();
+
+      if (keyword === "") {
+        console.error("Please enter a valid keyword.");
+        return;
+      }
+
+      loadingIndicator.style.display = "block";
+
+      fetch(`/search_pdf?keyword=${encodeURIComponent(keyword)}&currentUrl=${encodeURIComponent(currentUrl)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Request failed with status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          loadingIndicator.style.display = "none";
+          console.log("Search Results:", data);
+          displaySearchResults(data);
+        })
+        .catch(error => {
+          loadingIndicator.style.display = "none";
+          console.error('Error:', error);
+        });
+    }
+
+
+    function displaySearchResults(results) {
+      const emailDataBody = document.getElementById("emailDataBody");
+      emailDataBody.innerHTML = "";
+
+      if (results.length === 0) {
+        emailDataBody.innerHTML = "<tr><td colspan='6'>No matching PDFs found.</td></tr>";
+      } else {
+        results.forEach(email => {
+          console.log("Email:", email);
+
+          const actionColumn = `
+                <td data-label="Action">
+                    ${email.action === 'Interested' ? `
+
+                        <a href="/candidateprofile/${email.sender_name}" data-toggle="tooltip" title="profile"><i
+                          style="font-size:20px; margin-right:8px; " class="fas fa-user-circle"></i></a>
+                          <a href="" data-toggle="tooltip" title="Remove from Select" onclick="handleSelectionChange('${email.id}', 'Reverse changes')">
+                            <i style="font-size:20px;" class="fas fa-undo"></i>
+                        </a>
+                        <a href="" data-toggle="tooltip" title="move back to applied candidates"
+                           onclick="handleSelectionChange('${email.id}', 'move to applied')"><i
+                           style="font-size:18px; margin-left:8px" class="fas fa-exchange-alt"></i></a>
+                    ` : `
+                        <a href="" data-toggle="tooltip" title="Select candidate" onclick="handleSelectionChange('${email.id}', 'Interested')">
+                            <i style="font-size:20px; margin-right:8px;" class="fas fa-check-square"></i>
+                        </a>
+                    `}
+                </td>
+            `;
+
+          // Apply Jinja logic for email.status
+          const statusColumn = `
+    <td data-label="Current Status">
+        ${email.status === 'Candidate Placement' && email.action == 'Interested' ? `
+            Candidate placed
+        ` : `
+            ${email.status}
+            <a style="text-align:center" href="/onereporting_form/${email.id}">
+                <br>
+                ${email.status !== 'Candidate Placement' && email.action == 'Interested' ? `
+                    <i style="font-size:18px;" class="fas fa-edit"></i>
+                ` : ''}
+            </a>
+        `}
+    </td>
+`;
+
+
+         // Combine all columns into a table row
+          const row = `
+             <tr>
+                  <td data-label="Applicant Info">
+                      ${email.sender_name} <br>
+                      ${email.email == 'No Email!' ? `<span style="color: red;">${email.email}</span>` : email.email} <br>
+                      ${email.phone_number.length === 11 || email.phone_number.length === 10 || email.phone_number.length === 12 ? `<a href="tel:${email.phone_number}">${email.phone_number}</a>` : '-'}
+                  </td>
+                  <td data-label="Job Detail">${email.subject_part2}<br>${email.subject_part1}</td>
+                  <td data-label="Date">${email.formatted_date}</td>
+                  <td data-label="Resumes">
+                      <a href="#" style="padding-bottom:2px; border-bottom: 1px solid black;" onclick="showPdf(${email.id}); return false;">View PDF</a>
+                  </td>
+                  ${statusColumn}
+                  ${actionColumn}
+              </tr>
+          `;
+
+
+          emailDataBody.innerHTML += row;
+        });
+      }
+    }
+
+    $(document).ready(function () {
+      // Global variables for pagination
+      var currentPage = 1;
+      var itemsPerPage = 300;
+      var totalFilteredPages = $('#total_pages').val(); // Retrieve total_pages value
+
+      // Function to send AJAX request with filter values
+      function sendAjaxRequest(year, country, subject) {
+        // Get the current URL
+        var currentUrl = window.location.href;
+        var url = new URL(currentUrl);
+        // Get the current active URL
+        var currentUrl = window.location.href;
+        var pathArray = currentUrl.split('/');
+        var lastSegment = pathArray[pathArray.length - 1];
+        var ajaxUrl = '/' + lastSegment;
+
+
+        // Use the last segment of the path as part of the AJAX URL
+        var ajaxUrl = '/' + lastSegment;
+        // Add filter parameters to the URL
+        url.searchParams.set('year_select', year);
+        url.searchParams.set('country_select', country);
+        url.searchParams.set('subj_select', subject);
+
+        console.log("Sending AJAX request to URL:", url.toString());
+
+        // Send AJAX request to server
+        $.ajax({
+          url: ajaxUrl,
+          type: 'GET',
+          data: {
+            year_select: year,
+            country_select: country,
+            subj_select: subject,
+            page: currentPage,
+            per_page: itemsPerPage
+          },
+          success: function (response) {
+            // Update page with filtered data returned from server
+            $('#filtered_data').html(response.html);
+            var alldata = response.alldata;
+            totalFilteredPages = response.total_pages; // Update totalFilteredPages based on the response
+
+            // Display search results or perform other actions as needed
+            console.log("Alldata:", alldata);
+            displaySearchResults(alldata);
+
+            // Update pagination links based on the totalFilteredPages
+            updatePaginationLinks();
+          },
+          error: function (xhr, status, error) {
+            // Handle errors
+            console.error(error);
+          }
+        });
+      }
+
+      // Initial AJAX request on page load
+      sendAjaxRequest();
+
+      // Function to update pagination links based on totalFilteredPages
+      function updatePaginationLinks() {
+        // Remove existing pagination links
+        $('.pagination-list').empty();
+
+        // Add pagination links for the totalFilteredPages
+        var startPage = Math.max(currentPage - 2, 1);
+        var endPage = Math.min(currentPage + 2, totalFilteredPages);
+
+        // Add ellipsis if there are more pages before the start
+        if (startPage > 1) {
+          $('.pagination-list').append($('<li>').append($('<a>').attr('href', '#').attr('data-page', 1).text(1)));
+          if (startPage > 2) {
+            $('.pagination-list').append($('<li>').text('...'));
+          }
+        }
+
+        // Add pages within the range
+        for (var i = startPage; i <= endPage; i++) {
+          var pageLink = $('<a>').attr('href', '#').attr('data-page', i).text(i);
+          $('.pagination-list').append($('<li>').append(pageLink));
+        }
+
+        // Add ellipsis if there are more pages after the end
+        if (endPage < totalFilteredPages) {
+          if (endPage < totalFilteredPages - 1) {
+            $('.pagination-list').append($('<li>').text('...'));
+          }
+          $('.pagination-list').append($('<li>').append($('<a>').attr('href', '#').attr('data-page', totalFilteredPages).text(totalFilteredPages)));
+        }
+      }
+
+      // Event listener for pagination controls
+      $('.pagination').on('click', 'a', function () {
+        currentPage = parseInt($(this).attr('data-page'));
+        var year = $('#year_select').val();
+        var country = $('#country_select').val();
+        var subject = $('#subj_select').val();
+        sendAjaxRequest(year, country, subject);
+      });
+
+      // Event listener for filter dropdowns
+      $('.selectcountryfilter').change(function () {
+        // Get selected filter values
+        var year = $('#year_select').val();
+        var country = $('#country_select').val();
+        var subject = $('#subj_select').val();
+        console.log(year, country, subject, "hello");
+
+        // Update data attributes of pagination links with current filter parameters
+        $('.pagination a').each(function () {
+          $(this).data('year', year);
+          $(this).data('country', country);
+          $(this).data('subject', subject);
+        });
+
+        // Send AJAX request to server with filter values
+        sendAjaxRequest(year, country, subject);
+      });
+    });
+
+
+
+
+  </script>
+
+  {% endblock javascripts %}

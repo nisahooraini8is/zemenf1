@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Onboarding</title>
+    <link rel="icon" href="{{ url_for('static', filename='/img/titleicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/digital.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/themes/dark.css">
+</head>
+<style>
+<!--    .flatpickr-calendar {-->
+<!--            background-color: white;-->
+<!--            color: black;-->
+<!--        }-->
+</style>
+
+<body>
+    <div>
+     <form id="signup-form" action="/applyforaccount" class="form-container" method="post" enctype="multipart/form-data">
+
+            <h1 style="text-align: center; color: #D31B49;">Personal Information</h1>
+            <div class="form-field-container">
+                <div class="form-item">
+                    <label for="firstName"><span style="color: red;">*</span> First Name</label>
+                    <input type="text" name="fname" id="first-name-input" placeholder="First Name" required>
+                </div>
+                <div class="form-item">
+                    <label for="lastName"><span style="color: red;">*</span> Last Name</label>
+                    <input type="text" name="lname" id="last-name-input" placeholder="Last Name" required>
+                </div>
+            </div>
+            <div class="form-item">
+                <label for="email"><span style="color: red;">*</span> Email</label>
+                <input type="email" name="email" id="email" placeholder="Email">
+            </div>
+            <div class="form-field-container">
+                <div class="form-item">
+                    <label for="primaryPhone"><span style="color: red;">*</span> Primary Phone</label>
+                    <input type="tel" name="phone" id="primaryPhone" placeholder="Primary Phone" required>
+                </div>
+                <div class="form-item">
+                    <label for="secondaryPhone">Secondary Phone</label>
+                    <input type="tel" name="sphone" id="secondaryPhone" placeholder="Secondary Phone" >
+                </div>
+            </div>
+            <div class="form-field-container">
+                <div class="form-item">
+                    <label for="sin">TIN(Tax Identification Number)</label>
+                    <input type="text" name="tin" id="sin" placeholder="Tax Identification Number">
+                </div>
+                <div>
+                    <p style="font-weight: bold; margin: 0 0 8px 0;"><span style="color: red;">*</span> Birth Date</p>
+                    <div class="birth-date-container">
+                        <div class="form-item">
+                            <select id="day-box" name="birthDay">
+                                <option value="">DD</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <select id="selectBox2" name="birthMonth">
+                                <option value="">MM</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <select id="selectBox" name="birthYear">
+                                <option value="">YYYY</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Address Section -->
+            <div class="form-item">
+                <label for="streetAddress"><span style="color: red;">*</span> House Number</label>
+                <input style="width: 96%;" name="streetAddress" type="text" id="streetAddress" placeholder="House Number" required>
+            </div>
+            <div class="form-field-container">
+                <div class="form-item">
+                    <label for="city"><span style="color: red;">*</span> City</label>
+                    <input type="text" name="city" id="city" placeholder="City" required>
+                </div>
+                <div class="form-item">
+                    <label for="postalCode"><span style="color: red;">*</span> P.O Box</label>
+                    <input type="text"  name="postalCode" id="postalCode" placeholder="P.O Box">
+                </div>
+                <div class="form-item">
+                    <label for="province"><span style="color: red;">*</span> Province</label>
+                    <select id="province" name="province">
+                        <option value="">Select Province</option>
+                        <option value="Tigray">
+                            Tigray
+
+                        </option>
+                        <option value="Afar">
+                            Afar
+
+                        </option>
+                        <option value="Oromia">
+                            Oromia
+
+                        </option>
+                        <option value="Somali">
+                            Somali
+
+                        </option>
+                        <option value="Benishangul-Gumuz">
+                            Benishangul-Gumuz
+
+                        </option>
+                        <option value="Southern Nations">
+
+                            Southern Nations
+
+                        </option>
+                        <option value="Nationalities">
+
+                            Nationalities
+
+                        </option>
+                        <option value="Gambella and Harari">
+
+                            Gambella and Harari
+
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-item">
+                <label for="province"><span style="color: red;">*</span> Your Residential status</label>
+                <select id="residential-box" name="residential">
+                    <option value="">Select Residential Status</option>
+                </select>
+            </div>
+            <!-- Income Section -->
+            <div class="form-field-container">
+                <div class="form-item">
+                    <label for="grossAnnualIncome"><span style="color: red;">*</span> Gross Annual Income</label>
+                    <input type="number" id="grossAnnualIncome" name="gross" placeholder="Gross Annual Income" required>
+                </div>
+                <div class="form-item">
+                    <label for="sourceOfIncome"><span style="color: red;">*</span> Source of Income</label>
+                    <select id="source-box" name="sourceOfIncome" required>
+                        <option value="">Select Source of Income</option>
+                        <option value="Employment">Employment</option>
+                        <option value="Self-Employment">Self-Employment</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Business Owner">Business Owner</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Retirement">Retirement</option>
+                        <option value="Goverment Assistance">Goverment Assistance</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-item">
+                <label for="employmentStatus"><span style="color: red;">*</span> Employment Status</label>
+                <select id="" name="employmentStatus" required>
+                    <option value="">Select Employement Status</option>
+                        <option value="Full-Time">Full-Time</option>
+                        <option value="Part-Time">Part-Time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Temporary">Temporary</option>
+                        <option value="Intern">Intern</option>
+                        <option value="Freelancer">Freelancer</option>
+                        <option value="Self-Employed">Self-Employed</option>
+                    <option value="Un-Employed">Un-Employed</option>
+                    <!-- Populate with options -->
+                </select>
+            </div>
+            <div class="form-item">
+                <label for="jobOccupation"><span style="color: red;">*</span> Occupation</label>
+                <input style="width: 96%;" type="text" name="jobOccupation"  id="jobOccupation" placeholder="Occupation" required>
+            </div>
+            <div class="form-field-container">
+                <div class="form-item" style="margin-bottom: 20px;">
+                    <label style="margin-bottom: 20px;"><span style="color: red;">*</span>Add ID Card</label>
+                    <div class="upload-container">
+                        <div>
+                            <p style="margin: 0 0 10px 0;" for="upload1"><span style="color: red;">*</span>Upload ID Front</p>
+                            <input type="file" id="upload1" name="upload1" />
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 10px 0;" for="upload2"><span style="color: red;">*</span>Upload ID Back</p>
+                            <input type="file" id="upload2" name="upload2" />
+                        </div>
+                    </div>
+                    <label><span style="color: red;">*</span> Add Selfie</label>
+                    <input type="file" id="selfie" name="selfie" />
+                </div>
+            </div>
+            <h1 style="color: #D31B49; margin: 0 0 20px 0;">Appointment Details</h1>
+            <div class="form-field-container">
+                <div class="form-item">
+<!--                    <input type="date" id="date" class="flatpickr-input" name="appointdate" placeholder="Select Date" required>-->
+                          <input id="date1"  placeholder="MM/DD/YYYY" data-input name="appointdate" placeholder="Select Date" required/>
+
+                </div>
+                <div class="form-item">
+                    <select id="employmentStatus" name="appointtime" required>
+                        <option value="">Select Appointment Time</option>
+                        <option value="09 AM">09 AM</option>
+                        <option value="10 AM">10 AM</option>
+                        <option value="11 AM">11 AM</option>
+                        <option value="12 AM">12 AM</option>
+                        <option value="01 PM">01 PM</option>
+                        <option value="02 PM">02 PM</option>
+                        <option value="03 PM">03 PM</option>
+                        <option value="04 PM">04 PM</option>
+                        <option value="05 PM">05 PM</option>
+                    </select>
+                </div>
+            </div>
+            <h1 style="color: #D31B49; margin: 0 0 20px 0;">Our Branches</h1>
+            <div class="form-item">
+                <select id="employmentStatus" name="Locations" required>
+                    <option value="">Select Location</option>
+                    <option value="CMC ATM & CMC Banking Center">CMC ATM & CMC Banking Center</option>
+                    <option value="Hayahulet Banking Center">Hayahulet Banking Center</option>
+                    <option value="Arada Banking Center">Arada Banking Center</option>
+                    <option value="Sweden Embassy Kiosk">Sweden Embassy Kiosk</option>
+                    <option value="le Medhanialem Banking Center & Emirates Airline Kiosk">Bole Medhanialem Banking Center & Emirates Airline Kiosk</option>
+                    <option value="WABESHEBELLE ATM & Mexico Banking Center">WABESHEBELLE ATM & Mexico Banking Center </option>
+                    <option value="BOLE CENTER ATM & Bole Banking Center">BOLE CENTER ATM & Bole Banking Center</option>
+                    <option value="Besrate Gebriel Banking Center">Besrate Gebriel Banking Center</option>
+                </select>
+            </div>
+            <!-- Terms & Conditions -->
+            <div class="form-item checkbox" style="display: flex; align-items: center;">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label style="margin: 0 0 0 10px;" for="terms">I accept the terms and conditions</label>
+            </div>
+            <!-- Submit Button -->
+            <div class="form-item">
+                <button type="submit"
+                    style="background-color: #D31B49; width: 200px; padding: 10px; border-radius: 6px;">Create
+                    Account</button>
+            </div>
+
+              </form>
+    </div>
+</body>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <!--  Flatpickr  -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.js"></script>
+
+    <script>
+        $("#date1").flatpickr({
+            enableTime: false,
+            dateFormat: "m-d-Y",
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0 || date.getDay() === 6);  // disable weekends
+                }
+            ],
+            locale: {
+                firstDayOfWeek: 1 // set start day of week to Monday
+            }
+        });
+        const currentYear = new Date().getFullYear();
+        const sourceOfIncome = [
+            "employment",
+            "selfEmployment",
+            "freelance",
+            "businessOwner",
+            "investment",
+            "retirement",
+            "rentalIncome",
+            "governmentAssistance",
+            "other",
+        ];
+        const employmentStatus = [
+            "employment",
+            "selfEmployment",
+            "freelance",
+            "businessOwner",
+            "investment",
+            "retirement",
+            "rentalIncome",
+            "governmentAssistance",
+            "other",
+        ];
+        const residentialStatus = ["Owns Home", "Rents", "Living With Family", "Student Housing", "Temporary Accomodation"];
+        const days = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"];
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const years = Array.from({ length: currentYear - 1923 + 1 }, (_, index) => currentYear - index);
+        let select = document.getElementById("selectBox");
+        for (let index = 0; index < years.length; index++) {
+            const element = years[index];
+            const opt = document.createElement("option");
+            opt.textContent = element;
+            select.append(opt);
+        }
+        let select2 = document.getElementById("selectBox2");
+        for (let index = 0; index < months.length; index++) {
+            const element = months[index];
+            const opt = document.createElement("option");
+            opt.textContent = element;
+            select2.append(opt);
+        }
+        let select3 = document.getElementById("day-box");
+        for (let index = 0; index < days.length; index++) {
+            const element = days[index];
+            const opt = document.createElement("option");
+            opt.textContent = element;
+            select3.append(opt);
+        }
+        let select4 = document.getElementById("residential-box");
+        for (let index = 0; index < residentialStatus.length; index++) {
+            const element = residentialStatus[index];
+            const opt = document.createElement("option");
+            opt.textContent = element;
+            select4.append(opt);
+        }
+        let select5 = document.getElementById("employement-box");
+        for (let index = 0; index < employmentStatus.length; index++) {
+            const element = employmentStatus[index];
+            const opt = document.createElement("option");
+            opt.textContent = element;
+            select5.append(opt);
+        }
+        flatpickr("#date", {
+            disable: [
+                function (date) {
+                    return (date.getDay() === 6 || date.getDay() === 0);
+                }
+            ],
+            dateFormat: "Y-m-d",
+        });
+    </script>
+<script>
+    // Get the date input element
+    var dateInput = document.getElementById('date');
+
+    // Function to check if a date is a Saturday or Sunday
+    function isWeekend(date) {
+        var day = date.getDay(); // Sunday is 0, Monday is 1, ..., Saturday is 6
+        return (day === 0 || day === 6);
+    }
+
+    // Disable Saturdays and Sundays in the date input
+    dateInput.addEventListener('input', function() {
+        var selectedDate = new Date(dateInput.value);
+        if (isWeekend(selectedDate)) {
+            // If selected date is a Saturday or Sunday, clear the input
+            dateInput.value = '';
+            alert("Saturdays and Sundays are disabled. Please select another date.");
+        }
+    });
+
+    // Disable weekends in the calendar popup
+    dateInput.addEventListener('focus', function() {
+        dateInput.addEventListener('keydown', function(e) {
+            // Prevent selecting weekends using keyboard arrows
+            var selectedDate = new Date(dateInput.value);
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                var newDate = new Date(selectedDate);
+                newDate.setDate(e.key === 'ArrowLeft' ? selectedDate.getDate() - 1 : selectedDate.getDate() + 1);
+                if (isWeekend(newDate)) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        dateInput.addEventListener('blur', function() {
+            // If the manually entered date is a weekend, clear the input
+            var selectedDate = new Date(dateInput.value);
+            if (isWeekend(selectedDate)) {
+                dateInput.value = '';
+                alert("Saturdays and Sundays are disabled. Please select another date.");
+            }
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+<script>
+    document.querySelector('form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        fetch('/applyforaccount', {
+            method: 'POST',
+            body: new FormData(event.target)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Application Submitted Successfully!',
+                }).then(() => {
+                    window.location.href = '/digital-onboarding'; // Corrected URL
+                });
+            } else if (data.message === 'already_applied') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops!',
+                    text: 'You have already applied',
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'An error occurred while submitting the application.',
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the form.');
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+{% block content %}
+<style>
+     .active-button {
+    background-color: green;
+  }
+   .btn-arc {
+    height: 30px;
+    margin-top: 7px;
+    margin-right: 7px;
+    background: none;
+    color: black;}
+
+.cd-btn {
+  background: #eda4a4!important;
+  border: none;
+  outline: none;
+  color: #ffff !important;
+  transition: background-color 1s;
+  border-bottom : 1ps solid #2d8c56;
+}
+
+<!--.cd-btn:hover {-->
+<!--  background: linear-gradient(-90deg, black 10%, #4372b8 100%)!important;-->
+<!--}-->
+   button{
+    border: none;
+    border-bottom: 1px solid black;
+    border-radius: 0px!important;
+    }
+
+    .cd-btn a{
+     color: #ffff !important;
+    }
+    p{
+    margin-left:10px;
+    color:black;
+    }
+    .order-scroll{
+    border-radius:10px;
+    list-style:none;
+    padding:0px 10px;
+    }
+
+
+ tr{
+   margin-top:20px;
+   border-bottom: 1px solid black;
+
+   }
+  th{
+  text-align:center;
+  color: black;
+    padding:5px
+  }
+   td{
+  text-align:center;
+  color: black;
+    padding:5px;
+    cursor: pointer;
+  }
+   .list-item:hover{
+       background-color: #7fba96;
+   }
+    .candidate-row:hover{
+       background-color: #7fba96;
+   }
+.selectedcandidate {
+    display: none;
+    position: absolute;
+<!--    top: 40%;-->
+    left: 25%;
+    transform: translate(0%, -50%);
+    z-index: 9999;
+}
+
+.card .card-header{
+color:black;
+}
+.pagination{
+justify-content: flex-end;
+}
+
+</style>
+    <div class="content">
+        <div class="row">
+             <div class="col-lg-12">
+                <div class="card card-chart">
+                   <div class="card-header">
+     <div>
+         <div style="display:flex; justify-content:space-between; align-items:center;">
+           <div style="display:flex; justify-contnent:space-between">
+                <form action="{{ url_for('jobOders') }}" method="">
+              <div class="card-header" style="margin-top:10px;">
+                <button class="card-title {% if active_url == 'jobOders' %}active-button{% endif %}"
+                  id="selected-button">Open Positions</button>
+              </div>
+            </form>
+<!--             <form action="{{ url_for('Companies') }}" method="">-->
+<!--              <div class="card-header" style="margin-top:10px;">-->
+<!--                <button class="card-title {% if active_url == 'Companies' %}active-button{% endif %}"-->
+<!--                  id="candidate-button">Companies</button>-->
+<!--              </div>-->
+<!--            </form>-->
+           </div>
+         {% if url_for('jobOders') == request.path %}
+        <div class="card-header" style="display:flex;">
+            <button class="btn-arc" id="show">
+                <a href="/jobOders?show_archived=1"> Show Archive</a>
+            </button>
+             <button style="display:none" class="btn-arc" id="hide">
+                <a href="/jobOders"> Hide Archive</a>
+            </button>
+
+            <button class="card-title cd-btn" id="candidate-button">
+                <a href="/newposition"><i class="fas fa-plus"></i> add new position</a>
+            </button>
+
+
+        </div>
+        {% else%}
+<!--            <button class="card-title cd-btn" id="candidate-button">-->
+<!--                <a href="/onereporting"><i class="fas fa-plus"></i> Add New Deal</a>-->
+<!--            </button>-->
+
+
+        </div>
+         {% endif %}
+
+
+
+    </div>
+ {% if url_for('jobOders') == request.path %}
+
+<form method="POST" action="{{ url_for('archive_jobs') }}">
+    <div class="order-scroll">
+              <button id="archive-btn" type="submit" style="display: none;
+    background: red;
+    padding: 3px 24px;
+    color: white;
+    border-bottom: none;
+    margin-left: 5px;">Archive</button>
+              <button id="unarchive-btn" type="submit" style="display: none;
+    background: red;
+    padding: 3px 14px;
+    color: white;
+    border-bottom: none;
+    margin-left: 5px;">UnArchive</button>
+
+        <table style="margin:auto;">
+            <thead class=" text-primary">
+                <tr>
+                    <th scope="col" width="20px">Select</th>
+                    <th scope="col" width="250px">Posted On</th>
+                    <th scope="col" width="150px">Pay Rate</th>
+                    <th scope="col" width="150px">Shift</th>
+                    <th scope="col" width="40px">Slots</th>
+                    {% if not request.args.get('show_archived') %}
+                    <th scope="col" width="140px">Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for job_order in jobsorder %}
+                {% if job_order.vacancy > 0 %}
+                <tr
+                    data-toggle="tooltip"
+                    class="list-item red-tooltip"
+                    data-id="{{ job_order.company_id }}"
+                    data-archived="{{ job_order.archived }}"
+                >
+                    <td>
+                        <input type="checkbox" name="selected_jobs[]" value="{{ job_order.id }}">
+                    </td>
+                    <td data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')">
+                        <span style="color: blue;">{{ job_order.created_at.strftime('%m-%d-%Y') }}</span><br>
+                        <span style="font-weight: 600">{{ job_order.company }}</span><br>
+                        needs: {{ job_order.title }}
+                    </td>
+                    <td data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')">${{ job_order.payrate }} ({{ job_order.salarytype }})</td>
+                    <td>{{ job_order.starttime }} to {{ job_order.endtime }}</td>
+                    <td class="text-center">{{ job_order.vacancy }}</td>
+
+                    {% if not request.args.get('show_archived') %}
+                    <td>
+                        <i data-toggle="tooltip" title="click to select candidates" onclick="showCandidateList('{{ job_order.company_id }}', '{{ job_order.id }}')" class="fas fa-edit" onclick="showCandidateList('{{ job_order.id }}')"></i>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</form>
+ {% elif url_for('Companies') == request.path %}
+ <form method="POST" action="{{ url_for('archive_companies') }}">
+    <div class="order-scroll">
+           <div style="display:flex;">
+                  <button id="carchive-btn" type="submit" style="
+    display:none;
+    background: red;
+    padding: 3px 24px;
+    color: white;
+    border-bottom: none;
+    margin-left: 5px;">Archive</button>
+              <button id="cunarchive-btn" type="submit" style="
+    display:none;
+    background: red;
+    padding: 3px 14px;
+    color: white;
+    border-bottom: none;
+    margin-left: 5px;">UnArchive</button>
+           </div>
+   <table style="margin:auto;">
+            <thead class=" text-primary">
+                <tr>
+                    <th scope="col" width="5%">Select</th>
+                    <th scope="col" width="18%">Companies</th>
+                    <th scope="col" width="10%">Current Deal </th>
+                    <th scope="col" width="10%">Deal Sign on </th>
+                    <th scope="col" width="10%">Current Status</th>
+                    <th scope="col" width="10%">More Details</th>
+
+
+
+                </tr>
+            </thead>
+            <tbody>
+            {% for job_order in companies %}
+                <tr
+                    data-toggle="tooltip"
+                    class="list-item red-tooltip"
+                    data-cid="{{ job_order.company_id }}"
+                    >
+                    <td>
+                        <input type="checkbox" name="selected_company[]" value="{{ job_order.id }}">
+                    </td>
+
+
+                    <td data-toggle="tooltip">
+                        <span style="font-weight: 600">{{ job_order.company }}</span><br>
+                    </td>
+                    </td><td data-toggle="tooltip">
+                        <span style="font-weight: 600">{{ job_order.status }}</span><br>
+                    </td>
+                       <td data-toggle="tooltip">
+                        <span style="font-weight: 600">{{ job_order.created_at.strftime('%m-%d-%Y') }}</span><br>
+                    </td>
+                     <td data-toggle="tooltip">
+                        <span style="font-weight: 600">{{ job_order.company_status }}</span><br>
+                     </td>
+                    <td data-toggle="tooltip">
+                        <span style="font-weight: 600">view</span><br>
+                     </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+  {% endif %}
+    </div>
+</div>
+
+                </div>
+            </div>
+        </div>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item{% if page == 1 %} disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('jobOders', page=page-1, show_archived=show_archived) }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% if start_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('jobOders', page=1, show_archived=show_archived) }}">1</a>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+        {% endif %}
+        {% for p in range(start_page, end_page + 1) %}
+            <li class="page-item{% if p == page %} active{% endif %}">
+                <a class="page-link" href="{{ url_for('jobOders', page=p, show_archived=show_archived) }}">{{ p }}</a>
+            </li>
+        {% endfor %}
+        {% if end_page < total_pages %}
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('jobOders', page=total_pages, show_archived=show_archived) }}">{{ total_pages }}</a>
+            </li>
+        {% endif %}
+        <li class="page-item{% if page == total_pages %} disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('jobOders', page=page+1, show_archived=show_archived) }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+        <div class="row selectedcandidate">
+             <div style="margin:auto;" class="col-lg-9 ">
+                <div class="card card-chart">
+                    <div class="card-header">
+                     <div>
+                         <div style="display:flex; justify-content:space-between; align-items:center;">
+                             <h4 class="card-title">Select Candidates</h4>
+                             <i onclick="close()" style="margin-bottom:10px; margin-right:30px" class="fas fa-window-close"></i>
+                         </div>
+                     <div class="order-scroll2">
+                     <table style="margin:auto;">
+                       <thead>
+                        <tr>
+                            <th scope="col" width="20%">Applicant Info</th>
+                            <th scope="col" width="25%">Job Detail</th>
+                            <th scope="col" width="10%">Resumes</th>
+                            <th scope="col" width="25%">Current Status</th>
+
+                        </tr>
+                      </thead>
+                       <tbody  data-toggle="tooltip" title="click to fill form">
+                         {% if alldata|length > 0 %}
+                         {% for name in alldata %}
+                              <tr class="candidate-row"data-id="{{ name.id }}-{{ name.status }}">
+                               <td data-label="Due Date">
+                                 {{ name.sender_name }} <br>
+                                 {% if name.email == 'No Email!' %}
+                                     <span style="color: red;">{{ name.email }}</span> <br>
+                                 {% else %}
+                                     {{ name.email }} <br>
+                                 {% endif %}
+                                 {{ name.phone_number }}
+                            </td>
+                               <td data-label="Amount">{{ name.subject_part1  }} <br> From: {{ name.subject_part2  }}</td>
+                                <td data-label="Amount">
+                                    <a href="#" style=" padding-bottom:2px; border-bottom: 1px solid black;"
+                                       onclick="showPdf('{{ name.id }}'); return false;">
+                                       View PDF
+                                    </a>
+                                </td>
+                                 <td> {{name.status}}</td>
+                           </tr>
+                         {% endfor %}
+                         {% else %}
+                              <tr>
+                                   <td class="text-center" colspan="5">Empty</td>
+                            </tr>
+                            {% endif %}
+                       </tbody>
+                     </table>
+                     </div>
+                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block javascripts %}
+<script>
+    window.addEventListener('load', function () {
+      console.log("hello nisa")
+      var currentUrl = window.location.pathname;
+      var candidateButton = document.getElementById("candidate-button");
+      var selectedButton = document.getElementById("selected-button");
+      var registeredButton = document.getElementById("registered-button");
+
+      if (currentUrl === "{{ url_for('Companies') }}") {
+        candidateButton.style.backgroundColor = "black";
+        candidateButton.style.color = "#ffffff";
+      }
+      if (currentUrl === "{{ url_for('jobOders') }}") {
+        selectedButton.style.backgroundColor = "black";
+        selectedButton.style.color = "#ffffff";
+      }
+
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the current URL
+        var url = window.location.href;
+        console.log(url)
+
+        // Check if the URL contains the show_archived parameter
+        if (url.indexOf('show_archived=1') !== -1) {
+            // Show the "Hide Archive" button
+            document.getElementById('hide').style.display = 'inline-block';
+            // Hide the "Show Archive" button
+            document.getElementById('show').style.display = 'none';
+        } else {
+            // Hide the "Hide Archive" button
+            document.getElementById('hide').style.display = 'none';
+            // Show the "Show Archive" button
+            document.getElementById('show').style.display = 'inline-block';
+        }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name="selected_jobs[]"]');
+        var archiveBtn = document.getElementById('archive-btn');
+        var unarchiveBtn = document.getElementById('unarchive-btn');
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var atLeastOneChecked = Array.prototype.some.call(checkboxes, function(checkbox) {
+                    return checkbox.checked;
+                });
+                if (atLeastOneChecked) {
+                    if ("{{ request.args.get('show_archived') }}" === "1") {
+                        unarchiveBtn.style.display = 'block';
+                    } else {
+                        archiveBtn.style.display = 'block';
+                    }
+                } else {
+                    archiveBtn.style.display = 'none';
+                    unarchiveBtn.style.display = 'none';
+                }
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name="selected_company[]"]');
+        var archiveBtn = document.getElementById('carchive-btn');
+        var unarchiveBtn = document.getElementById('cunarchive-btn');
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var atLeastOneChecked = Array.prototype.some.call(checkboxes, function(checkbox) {
+                    return checkbox.checked;
+                });
+                if (atLeastOneChecked) {
+                   archiveBtn.style.display = 'block';
+                    unarchiveBtn.style.display = 'block';
+                } else {
+                    archiveBtn.style.display = 'none';
+                    unarchiveBtn.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+ var userRole = "{{ session['role'] }}";
+ console.log("userRole",userRole)
+
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+ document.addEventListener("click", function(event) {
+    const closeIcon = event.target.closest(".fas.fa-window-close");
+    if (closeIcon) {
+        const selectedCandidateDiv = document.querySelector('.selectedcandidate');
+        selectedCandidateDiv.style.display = 'none';
+    }
+});
+</script>
+<script>
+    function showPdf(emailId) {
+    const pdfWindow = window.open(`/pdf_content/${emailId}`);
+    markEmailAsRead(emailId);
+}
+var jobid = "";
+
+function showCandidateList(listId, orderId) {
+    console.log("show list")
+    const alldataLength = {{ alldata|length }};
+
+    if (alldataLength === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Candidates Selected',
+            text: 'There are no candidates to display.',
+        });
+        return; // Exit the function if there are no candidates
+    }
+
+    const selectedCandidateDiv = document.querySelector('.selectedcandidate');
+    jobid = listId;
+    OrderId = orderId;
+    console.log(jobid, OrderId);
+    selectedCandidateDiv.style.display = 'block';
+
+    const clickedListItem = document.querySelector(`.list-item[data-id="${listId}"]`);
+    clickedListItem.classList.add('selected-list-item');
+
+    const candidateRows = document.querySelectorAll('.candidate-row');
+
+    candidateRows.forEach(row => {
+        row.addEventListener('click', function() {
+            const candidateDataId = row.getAttribute('data-id');
+            const [candidateId, candidateStatus] = candidateDataId.split('-'); // Split the data-id
+            redirectToReportingForm(candidateId, candidateStatus, jobid, OrderId); // Pass candidateStatus
+            clickedListItem.classList.remove('selected-list-item');
+        });
+    });
+}
+
+
+function redirectToReportingForm(candidateId, candidateStatus)  {
+    // Remove 'selected-list-item' and 'selected-list-item2' classes from all candidate rows
+    const candidateRows = document.querySelectorAll('.candidate-row');
+    candidateRows.forEach(candidateRow => {
+        candidateRow.classList.remove('selected-list-item');
+    });
+
+    // Hide the selectedCandidateDiv
+    const selectedCandidateDiv = document.querySelector('.selectedcandidate');
+    selectedCandidateDiv.style.display = 'none';
+
+    // Redirect to the reporting form
+     if (candidateStatus !== "Candidate Placement") {
+        window.location.href = `/onereporting_form/${candidateId}/job/${jobid}/OrderId/${OrderId}`;
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Already placed!",
+        });
+     }
+}
+</script>
+{% endblock javascripts %}

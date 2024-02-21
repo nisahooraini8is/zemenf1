@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %} Members {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block content %}
+{% if session['role']=='admin' %}
+<style>
+   tr{
+   margin-top:20px;
+   border-bottom: 1px solid black;
+   width:100%;
+   }
+  th{
+  text-align:center;
+  color: #19355f;
+  }
+   td{
+  text-align:center;
+  color: #19355f;
+  }
+
+.active-button {
+      background-color: green;
+    }
+</style>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card ">
+         <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="card-header">
+            <h4 class="card-title">League Members</h4>
+          </div>
+          <div class="card-header">
+           <a href="{{ url_for('addmembers') }}"  style="display: flex;">
+            <i class="fa fa-user-plus" aria-hidden="true" style="margin-top: 15px;"></i>
+            <h4 class="card-title">Add Members</h4>
+           </a>
+          </div>
+         </div>
+          <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col" width="10%">Name</th>
+                            <th scope="col" width="15%">Email</th>
+                            <th scope="col" width="15%">Phone</th>
+                            <th scope="col" width="15%">Address</th>
+                            <th scope="col" width="8%">Designation</th>
+                           <th scope="col" width="10%">Role</th>
+                            <th scope="col" width="15%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for name in members_data %}
+                        <tr>
+                            <td data-label="Due Date"> {{name.fname}} {{name.lname}}</td>
+                            <td data-label="Amount">{{name.email}}</td>
+                            <td data-label="Amount">{{name.phone}}</td>
+                            <td data-label="Amount">{{name.address}}</td>
+                            <td data-label="Amount">{{name.designation}}</td>
+                            <td data-label="Amount"> {{name.role}}</td>
+                            <td data-label="Amount">
+                                <a data-toggle="tooltip" title="Edit Member" href="/updatemembers/{{name.id}}"><i class="fas fa-edit"></i></a>
+                                <a data-toggle="tooltip" title="Delete Member" href="#" data-member-id="{{ name.id }}" class="delete-member"><i style="margin-left: 10px;" class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-12">
+        <div class="card ">
+         <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="card-header">
+            <h4 class="card-title">Organization Chart</h4>
+          </div>
+         </div>
+          <div class="card-body">
+              <div>
+                   <img style="max-width: 75%;
+    border-radius: 0.2857rem;
+    display: block;
+    margin: auto;
+}"  src="{{ url_for('static', filename='/img/diagram.png') }}" alt="">
+              </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteLinks = document.querySelectorAll('.delete-member');
+
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            const memberId = this.getAttribute('data-member-id');
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Delete Member',
+                text: 'Are you sure you want to delete this member?',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: 'grey',
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/deletemembers/${memberId}`, {
+                        method: 'POST',
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Member Deleted!') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Member deleted successfully!',
+                            }).then(() => {
+                                window.location.href = "{{ url_for('members') }}";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while deleting the member.',
+                        });
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
+  {% endif %}
+{% endblock content %}
+{% block javascripts %}{% endblock javascripts %}
